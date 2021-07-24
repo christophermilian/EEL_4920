@@ -39,18 +39,14 @@ def setup():
 
 
 def loop():
-    relay_state = True
-    last_change_time = round(time.time() * 1000)
-
     while True:
         time.sleep(1)
         distance = get_sonar()  # get distance
         print("The distance is : %.2f cm" % distance)
+        GPIO.output(relayPin, False)  # If we don't see something, leave the relay on
 
         if distance < 5:
-            relay_state = False
-            GPIO.output(relayPin, relay_state)  # If we see something, turn off the relay
-        GPIO.output(relayPin, relay_state)  # If we don't see something, leave the relay on
+            GPIO.output(relayPin, True)  # If we see something, turn off the relay
 
 
 if __name__ == '__main__':  # Program entrance
@@ -58,5 +54,6 @@ if __name__ == '__main__':  # Program entrance
     setup()
     try:
         loop()
+        GPIO.output(relayPin, True)
     except KeyboardInterrupt:  # Press ctrl-c to end the program.
         GPIO.cleanup()  # release GPIO resource
